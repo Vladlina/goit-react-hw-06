@@ -1,3 +1,5 @@
+import { useDispatch } from "react-redux";
+import { addContact } from "../../redux/contactsSlice";
 import { useId } from "react";
 import { nanoid } from "nanoid";
 import { Formik, Form, Field, ErrorMessage } from "formik";
@@ -15,17 +17,20 @@ const validationRules = Yup.object().shape({
     .required("Required!"),
 });
 
-export default function ContactForm({ onAdd }) {
+export default function ContactForm() {
   const nameFieldId = useId();
   const phoneFieldId = useId();
 
-  const handleSubmit = (values, actions) => {
-    onAdd({
+  const dispatch = useDispatch();
+
+  const onSubmit = (values, actions) => {
+    const newContact = {
       id: nanoid(),
       name: values.name,
       number: values.phone,
-    });
+    };
 
+    dispatch(addContact(newContact));
     actions.resetForm();
   };
 
@@ -35,7 +40,7 @@ export default function ContactForm({ onAdd }) {
         name: "",
         phone: "",
       }}
-      onSubmit={handleSubmit}
+      onSubmit={onSubmit}
       validationSchema={validationRules}
     >
       <Form className={s.contactForm}>
